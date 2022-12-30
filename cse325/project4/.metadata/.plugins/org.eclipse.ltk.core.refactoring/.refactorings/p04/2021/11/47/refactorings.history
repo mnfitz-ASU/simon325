@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Rename resource &apos;p04/Sources/global.c&apos; to &apos;oldGlobal.c&apos;" description="Rename resource &apos;global.c&apos;" flags="7" id="org.eclipse.ltk.core.refactoring.rename.resource" input="Sources/global.c" name="oldGlobal.c" stamp="1637031066254" updateReferences="true"/>
+</session>

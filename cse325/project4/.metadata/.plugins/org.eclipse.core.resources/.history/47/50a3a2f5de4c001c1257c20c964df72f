@@ -1,0 +1,364 @@
+//************************************************************************************************************
+// File: rand.h
+// Project 4
+// Name: Matthew Fitzgerald # 1216579507 (mnfitzg1@asu.edu)
+// Class: CSE325 Embedded Microprocessor Systems
+// Semester: Fall 2021
+// Arizona State University, Tempe AZ 85287-8809
+//************************************************************************************************************
+
+// project 4
+#include "simon.h"
+#include "led.h"
+#include "pit.h"
+#include "pushb.h"
+#include "rand.h"
+#include "systick.h"
+
+// nxp
+#include "global.h"
+
+// c99
+#include <stdbool.h>
+#include <string.h>
+
+#define UNUSED(var) (void)(var)
+
+enum 
+{
+	kMaxSequenceLength = 100
+};
+
+struct Simon
+{
+	bool mIsInitialized; 
+	Pit* mPit;
+	
+	Led* mRedLed;
+	Led* mOrangeLed;
+	Led* mYellowLed;
+	Led* mGreenLed;
+	
+	PushB* mRedButton;
+	PushB* mOrangeButton;
+	PushB* mYellowButton;
+	PushB* mGreenButton;
+	
+	int mSequenceLength;
+	LedColor mSequence[kMaxSequenceLength];
+};
+typedef struct Simon Simon;
+
+Simon* SimonGet()
+{
+	static Simon sSimon = {/* mIsInitialized = */false}; 
+	return &sSimon;
+}
+
+/*
+void SimonPitTimerCallback(Pit* ioPit)
+{
+	UNUSED(ioPit);
+}
+*/
+
+/*
+void SimonPitWinnerCallback(Pit* ioPit)
+{
+	UNUSED(ioPit);
+}
+*/
+
+ void SimonSystickCallback()
+{
+	Simon* simon = SimonGet();
+	/*
+	where the function is called every 5 ms (since you have
+	configured SysTick to generate interrupts every 5 ms, then at every interrupt, set a flag which your main processing loop
+	will check. When the flag is set, call this function once per interrupt to poll the state of the pin). The function will return true
+	after reading 12 consecutive 0's on the pin, which will take a minimum of 60 ms, which is often enough to debounce a
+	switch.
+	*/
+	 PushBDebouncer(simon->mRedButton);
+	 PushBDebouncer(simon->mOrangeButton);
+	 PushBDebouncer(simon->mYellowButton);
+	 PushBDebouncer(simon->mGreenButton);
+}
+
+// Constructor-like function that performs all necessary operations to initialize the Simon Game
+void SimonInitialize(Simon* ioSimon)
+{
+	if (!ioSimon->mIsInitialized)
+	{		
+		ioSimon->mIsInitialized = true;
+		ioSimon->mSequenceLength = 4;
+
+		// Define LED variables
+		ioSimon->mRedLed = LedGet(kRed);
+		ioSimon->mOrangeLed = LedGet(kOrange);
+		ioSimon->mYellowLed = LedGet(kYellow);
+		ioSimon->mGreenLed = LedGet(kGreen);
+		
+		// Initialize LED variables
+				
+		LedInitialize(ioSimon->mRedLed);
+		LedInitialize(ioSimon->mOrangeLed);
+		LedInitialize(ioSimon->mYellowLed);
+		LedInitialize(ioSimon->mGreenLed);
+		
+		// Define PushB variables
+		ioSimon->mRedButton = PushBGet(kRedButton);
+		ioSimon->mOrangeButton = PushBGet(kOrangeButton);
+		ioSimon->mYellowButton = PushBGet(kYellowButton);
+		ioSimon->mGreenButton = PushBGet(kGreenButton);
+
+		// Initialize PushB variables		
+		PushBInitialize(ioSimon->mRedButton);
+		PushBInitialize(ioSimon->mOrangeButton);
+		PushBInitialize(ioSimon->mYellowButton);
+		PushBInitialize(ioSimon->mGreenButton);
+		
+		systick_init(	systick_period_isr_5_ms,
+						systick_int_enabled, 
+						systick_state_enabled, 
+						&SimonSystickCallback
+					);
+		ioSimon->mPit = PitGet(kPit0);
+		PitInitialize(ioSimon->mPit);
+		
+		uint32_t randomSeed = systick_read();
+		RandInit(randomSeed);
+	}
+	
+	//----------------------------------------------------------------------------------------------------------------------
+	// FUNCTION: systick_init()
+	//
+	// DESCRIPTION
+	// p_period is the time between SysTick interrupt requests (see the systick_period_isr_t typedef in systick.h). p_int
+	// should be systick_int_enabled if SysTick interrupts are requested. If p_state is systick_state_disabled, the counter
+	// will not begin counting until enabled later by calling systick_cfg_state(systick_state_enabled). If p_state is
+	// systick_state_enabled then upon return from this function, the counter will be counting. p_callback is a pointer to
+	// the user's callback function that will be called at every SysTick interrupt.
+	//
+	// NOTE
+	// The SysTick exception number is 15 (IRQ -1) and has priority 0 by default, which we do not change. This makes it the
+	// highest priority interrupt in the system (although there are a few exceptions which have higher priority).
+	//----------------------------------------------------------------------------------------------------------------------
+	//void systick_init(systick_period_isr_t p_period, systick_int_t p_int, systick_state_t p_state, callback_vu32_t p_callback)
+	
+	/*
+	    I suggest you initialize the timer by calling systick_init() to generate interrupts
+		at a 200 Hz rate.
+		
+		During the hardware initialization part of your code, after SysTick is up and running, you can call
+		systick_read() to read the current value of the timer and use that value as your pseudorandom number generator seed
+	 
+	 */
+	 
+}
+
+// Destructor-like function that performs all necessary operations to finalize the Simon Game
+void SimonFinalize(Simon* ioSimon)
+{
+	if (ioSimon->mIsInitialized)
+	{
+		ioSimon->mIsInitialized = false;
+		ioSimon->mSequenceLength = 0;
+		
+		PushBFinalize(ioSimon->mGreenButton);
+		PushBFinalize(ioSimon->mYellowButton);
+		PushBFinalize(ioSimon->mOrangeButton);
+		PushBFinalize(ioSimon->mRedButton);
+
+		LedFinalize(ioSimon->mGreenLed);
+		LedFinalize(ioSimon->mYellowLed);
+		LedFinalize(ioSimon->mOrangeLed);
+		LedFinalize(ioSimon->mRedLed);
+	}
+}
+
+void SimonCreateSequence(Simon* ioSimon)
+{
+	for (int i = 0; i < ioSimon->mSequenceLength; i++)
+	{
+		const uint32_t randValue = RandBetween(kRed, kGreen+1); // Random number in the range[red, green) 
+		ioSimon->mSequence[i] = (LedColor)randValue;
+	}
+}
+
+void SimonDisplaySequence(Simon* ioSimon)
+{
+	// Simon Sequence is flashed in order, on 1 second, off 1 second
+	PitStartTimer(ioSimon->mPit, 250, NULL/* &SimonPitTimerCallback */); // NULL: No callback needed
+	
+	for (int i = 0; i < ioSimon->mSequenceLength; i++)
+	{
+		const LedColor currentColor = ioSimon->mSequence[i];
+		
+		LedOn(LedGet(currentColor));
+		for (int onCount = 4; onCount > 0; onCount--)
+		{
+			while (!PitGetDidTrigger(ioSimon->mPit))
+			{
+				// wait for interrupt
+			}
+		}
+		
+		LedOff(LedGet(currentColor));
+		for (int offCount = 4; offCount > 0; offCount--)
+		{
+			while (!PitGetDidTrigger(ioSimon->mPit))
+			{
+				// wait for interrupt
+			}
+		}
+	}
+	
+	PitStopTimer(ioSimon->mPit);
+}
+
+bool SimonReadPushBSequence(Simon* ioSimon)
+{
+	bool isWinner = true;
+
+	bool wasRedPressed = PushBGetIsPressed(ioSimon->mRedButton);
+	bool wasOrangePressed = PushBGetIsPressed(ioSimon->mOrangeButton);
+	bool wasYellowPressed = PushBGetIsPressed(ioSimon->mYellowButton);
+	bool wasGreenPressed = PushBGetIsPressed(ioSimon->mGreenButton);
+
+	for (int i = 0; i < ioSimon->mSequenceLength;)
+	{
+		const bool isRedPressed = PushBGetIsPressed(ioSimon->mRedButton);
+		bool isButtonUp = (wasRedPressed & !isRedPressed);
+		if (isButtonUp)
+		{
+			isWinner = (ioSimon->mSequence[i++] == kRed);
+			if (!isWinner)
+			{
+				break;
+			}
+		}
+	
+		const bool isOrangePressed = PushBGetIsPressed(ioSimon->mOrangeButton);
+		isButtonUp = (wasOrangePressed & !isOrangePressed);	
+		if (isButtonUp)
+		{
+			isWinner = (ioSimon->mSequence[i++] == kOrange);
+			if (!isWinner)
+			{
+				break;
+			}
+		}
+		
+		const bool isYellowPressed = PushBGetIsPressed(ioSimon->mYellowButton);
+		isButtonUp = (wasYellowPressed & !isYellowPressed);	
+		if (isButtonUp)
+		{
+			isWinner = (ioSimon->mSequence[i++] == kYellow);
+			if (!isWinner)
+			{
+				break;
+			}
+		}
+		
+		const bool isGreenPressed = PushBGetIsPressed(ioSimon->mGreenButton);
+		isButtonUp = (wasGreenPressed & !isGreenPressed);	
+		if (isButtonUp)
+		{
+			isWinner = (ioSimon->mSequence[i++] == kGreen);
+			if (!isWinner)
+			{
+				break;
+			}
+		}
+	}
+	
+	return isWinner;
+}
+
+void SimonDisplayWinner(Simon* ioSimon)
+{
+	// All four Leds flash on-off-on-off for 250 ms
+	PitStartTimer(ioSimon->mPit, 250, NULL /*&SimonPitWinnerCallback*/); // NULL: No callback needed
+	
+	for (int blinkCount = 4; blinkCount > 0; blinkCount--)
+	{
+		while (!PitGetDidTrigger(ioSimon->mPit))
+		{
+			// wait for timer interrupt
+		}
+		LedToggle(ioSimon->mRedLed);
+		LedToggle(ioSimon->mOrangeLed);
+		LedToggle(ioSimon->mYellowLed);
+		LedToggle(ioSimon->mGreenLed);
+	}
+	PitStopTimer(ioSimon->mPit);
+}
+
+void SimonDisplayLoser(Simon* ioSimon)
+{
+	// Simon Sequence is flashed in order, on 1 second, off 1 second
+	SimonDisplaySequence(ioSimon);
+}
+
+void SimonPlay()
+{
+	Simon* simon = SimonGet();
+	SimonInitialize(simon);	
+	
+	simon->mSequenceLength = 4;
+	
+	SimonDisplayWinner(simon);
+	for (;;)
+	{
+		SimonCreateSequence(simon);
+		SimonDisplaySequence(simon);
+		const bool isWinner = SimonReadPushBSequence(simon);
+		if (isWinner)
+		{
+			SimonDisplayWinner(simon);
+		}
+		else
+		{
+			SimonDisplayLoser(simon);
+			break;
+		}
+		simon->mSequenceLength++;
+	}
+/*
+	// Simon game loop
+	// Play 1 game of simon, return to caller. 
+	// Caller decides if he wants to play another game of simon
+	for (;;)
+	{
+		// All Leds off
+
+		// Create Sequence
+		SimonCreateSequence(simon);
+		
+		
+		// Flash Phase
+		DisplaySequence();
+
+		MSecDelay(1000); // delay 1 second between flash and read
+
+		// Response Phase
+		const bool isWinner = ReadButtons();
+		if (isWinner)
+		{
+			// you win!
+			SimonWinner();
+		}
+		else
+		{
+			// you lose!
+			SimonLoser();
+			break;
+		}
+
+		sequenceLength++;
+	}
+*/
+	SimonFinalize(simon);
+}
+

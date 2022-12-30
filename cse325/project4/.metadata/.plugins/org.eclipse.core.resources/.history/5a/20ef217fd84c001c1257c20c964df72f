@@ -1,0 +1,197 @@
+//************************************************************************************************************
+// File: pushb.c
+// Project 4
+// Name: Matthew Fitzgerald # 1216579507 (mnfitzg1@asu.edu)
+// Class: CSE325 Embedded Microprocessor Systems
+// Semester: Fall 2021
+// Arizona State University, Tempe AZ 85287-8809
+//************************************************************************************************************
+
+// project 4
+#include "pushb.h"
+#include "gpio.h"
+#include "port.h"
+
+// nxp
+#include "global.h"
+
+// c99
+#include <stdbool.h>
+#include <string.h>
+
+#define UNUSED(var) (void)(var)
+
+enum
+{
+	kBounceCount = 12
+};
+
+// Structure that defines an instance of a Push Button
+struct PushB
+{
+	// has-a: color
+	ButtonColor mButtonColor;
+	// has-a: gpio type
+	GpioType mGpioType;
+	// has-a port type
+	PortType mPortType;
+	// has-a: pin number
+	int mPinNumber;
+	// has-a: initialize boolean
+	bool mIsIntialized;
+	// has-a: up/down state
+	bool mIsPressed;
+	// has-a: debounce counter
+	uint32_t mDebounceCounter;
+
+};
+
+/*
+ uc Pin 	GPIO   Port/Pin   Eval Board Header   		Pin Connect To Connect
+35 			PTA1   J1:2 	SW1 terminal 2 to J1:2 		SW1 terminal 3 to GND
+36 			PTA2   J1:4 	SW2 terminal 2 to J1:4 		SW2 terminal 3 to GND
+96 			PTD3   J1:6 	SW3 terminal 2 to J1:6 		SW3 terminal 3 to GND
+42 			PTA12  J1:8 	SW4 terminal 2 to J1:8 		SW4 terminal 3 to GND
+ */
+
+// LedName = {mButtonColor, mGpioType, mPinNumber, mIsIntialized, mIsPressed/*, mDebounceCounter*/};
+PushB gRedButton = {kRedButton, kGpioA, kPortA, 1, false, false, 0}; // Connected to J1:2
+PushB gOrangeButton = {kOrangeButton, kGpioA, kPortA, 2, false, false, 0}; // Connected to J1:4
+PushB gYellowButton = {kYellowButton, kGpioD, kPortD, 3, false, false, 0}; // Connected to J1:6
+PushB gGreenButton = {kGreenButton, kGpioA, kPortA, 12, false, false, 0}; // Connected to J1:8
+
+// Return a pointer to a global button instance.
+PushB* PushBGet(ButtonColor inColor)
+{
+	switch (inColor)
+	{
+	case kRedButton:
+		return &gRedButton;
+		break;
+	case kOrangeButton:
+		return &gOrangeButton;
+		break;
+	case kYellowButton:
+		return &gYellowButton;
+		break;
+	case kGreenButton:
+		return &gGreenButton;
+		break;
+	default:
+		//assert(!"Invalid inColor passed!"); // We shouldn't be here!
+		break;
+	}
+	return NULL;
+}
+
+// Constructor-like function that performs all necessary operations to initialize button
+void PushBInitialize(PushB* ioPushB)
+{
+	if (!ioPushB->mIsIntialized)
+	{
+		ioPushB->mIsPressed = false;
+		ioPushB->mDebounceCounter = kBounceCount;
+
+		const uint32_t kGpio = 1;
+		//uint32_t pcr = PortGetRegisterPCR(PortGet(ioPushB->mPortType), ioPushB->mPinNumber);
+		const uint32_t kMuxGpio = PORT_PCR_MUX(kGpio);
+		const uint32_t kPSPE = (/*PORT_PCR_PS_MASK |*/ PORT_PCR_PE_MASK); // MODIFIED!!!!
+		const int pin = ioPushB->mPinNumber;
+		PortSetRegisterPCR(PortGet(ioPushB->mPortType), pin, (/*pcr |*/ (kMuxGpio | kPSPE)));
+				
+		const uint32_t inputPin = (1 << ioPushB->mPinNumber);		
+		uint32_t pddr = GpioGetRegisterPDDR(GpioGet(ioPushB->mGpioType));
+		GpioSetRegisterPDDR(GpioGet(ioPushB->mGpioType), (pddr & ~inputPin));
+		
+		ioPushB->mIsIntialized = true;
+	}
+}
+
+// Destructor-like function that performs all necessary operations to finalize button
+void PushBFinalize(PushB* ioPushB)
+{
+	ioPushB->mIsIntialized = false;
+}
+/*
+
+There are two well-written articles on switch debouncing at the following websites:
+http://www.ganssle.com/debouncing.htm
+https://www.eejournal.com/article/ultimate-guide-to-switch-debounce-part-1
+The first article is by Jack Ganssle who is a legend in the embedded systems world. I have successfully his suggested
+debouncing routine for a switch connected to PORT C pin p_pin, where the function is called every 5 ms (since you have
+configured SysTick to generate interrupts every 5 ms, then at every interrupt, set a flag which your main processing loop
+will check. When the flag is set, call this function once per interrupt to poll the state of the pin). The function will return true
+after reading 12 consecutive 0's on the pin, which will take a minimum of 60 ms, which is often enough to debounce a
+switch.
+
+
+//---------------------------------------------------------------------------------------------------------
+// FUNCTION: pushb_portc_debounce()
+//
+// DESCRIPTION
+// Debounces a switch connected to pin p_pin of PORT C using the technique of Jack Ganssle.
+//---------------------------------------------------------------------------------------------------------
+bool_t pushb_portc_debounce(int p_pin)
+{
+static uint16_t state = 0x0000;
+uint32_t signal = (~GPIOC_PDIR >> p_pin) & 0x01;
+state = (state << 1) | signal | 0xE000;
+return state == 0xF000;
+}
+
+*/
+
+bool PushBGetIsPressed(const PushB* inPushB)
+{
+	return inPushB->mIsPressed;
+}
+
+void PushBDebouncer(PushB* ioPushB)
+{
+	const uint32_t inputPin = (1 << ioPushB->mPinNumber);
+	const uint32_t pdir = GpioGetRegisterPDIR(GpioGet(ioPushB->mGpioType));
+	
+	static uint32_t sPdirA = ~0;
+	if (ioPushB->mGpioType == kGpioA)
+	{
+		
+		if (sPdirA != pdir)
+		{
+			sPdirA = pdir;
+		}
+	}
+	
+	static uint32_t sPdirD = ~0;
+	if (ioPushB->mGpioType == kGpioD)
+	{
+		if (sPdirD != pdir)
+		{
+			sPdirD = pdir;
+		}
+	}
+	
+	const bool isPressed = ((inputPin & pdir) == 0);
+	if (isPressed)
+	{
+		static int counter = 0;
+		counter++;
+	}
+	
+	const bool isBouncing = (ioPushB->mIsPressed != isPressed);
+	if (isBouncing)
+	{
+		ioPushB->mDebounceCounter--;
+		if (ioPushB->mDebounceCounter == 0)
+		{
+			ioPushB->mIsPressed = isPressed;
+			ioPushB->mDebounceCounter = kBounceCount;
+		}
+	}
+	else
+	{
+		ioPushB->mDebounceCounter = kBounceCount;
+	}
+}
+
+
+ 
