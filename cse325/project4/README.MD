@@ -3,7 +3,7 @@
 <p align="center">
     <!--
     <a href="https://github.com/mnfitz-ASU/cse340redux/pulse" alt="Activity">
-        <img src="https://img.shields.io/github/commit-activity/mnfitz-ASU/cse340redux" /></a>
+        <img src="https://img.shields.io/github/commit-activity/mnfitz-ASU/compsci/cse325/project4" /></a>
     <a href="https://discord.gg/sKXHzHpq">
         <img src="https://img.shields.io/discord/308323056592486420?logo=discord"
             alt="chat on Discord"></a>
@@ -18,13 +18,14 @@
 
 # CSE325 Simon Project
 ## Description:
+CSE 325 project to demonstrate proficiency in understanding how to program a FPGA board
+- Idea: Program a FRDM-KE16Z FPGA board to simulate a playable game of Simon.
+This project modifies the instructor provided CSE 325 "skeleton code" used as the basis for all CSE 325 programming labs and implements the software on a FRDM-KE16Z FPGA board. During a game of Simon, there are four LED lights that can light in a sequence. The player must then recreate that sequence by pushing each LED's corresponging button. If the player remembers correctly, all the lights will flash twice and after a biref pause next sequence will begin to play. If the player remembers the sequence wrong, the correct sequence will repeat, and the game will end.
 
 ## The Board
 <p align="center">
 <img width="593" alt="arrow" src="https://user-images.githubusercontent.com/79553911/210030701-7f396a60-6a4e-4025-ac87-09cc59af6805.png">
 <p/>
-
-## Goals: 
 
 ## Prerequisites
 - Download [Visual Studio Code](https://code.visualstudio.com/)
