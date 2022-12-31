@@ -1,0 +1,100 @@
+p02
+Project_Headers
+
+//
+/////// SIM
+mkl46z.h (19 matches)
+6,780: #define SIM_SCGC5_REG(base)                      ((base)->SCGC5)  
+6,918: #define SIM_SCGC5_LPTMR_MASK                     0x1u  
+6,919: #define SIM_SCGC5_LPTMR_SHIFT                    0  
+6,920: #define SIM_SCGC5_TSI_MASK                       0x20u  
+6,921: #define SIM_SCGC5_TSI_SHIFT                      5  
+6,922: #define SIM_SCGC5_PORTA_MASK                     0x200u  
+6,923: #define SIM_SCGC5_PORTA_SHIFT                    9  
+6,924: #define SIM_SCGC5_PORTB_MASK                     0x400u  
+6,925: #define SIM_SCGC5_PORTB_SHIFT                    10  
+6,926: #define SIM_SCGC5_PORTC_MASK                     0x800u  
+6,927: #define SIM_SCGC5_PORTC_SHIFT                    11  
+6,928: #define SIM_SCGC5_PORTD_MASK                     0x1000u  
+6,929: #define SIM_SCGC5_PORTD_SHIFT                    12  
+6,930: #define SIM_SCGC5_PORTE_MASK                     0x2000u  
+6,931: #define SIM_SCGC5_PORTE_SHIFT                    13  
+6,932: #define SIM_SCGC5_SLCD_MASK                      0x80000u  
+6,933: #define SIM_SCGC5_SLCD_SHIFT                     19  
+7,036: #define SIM_SCGC5                                SIM_SCGC5_REG(SIM_BASE_PTR)  
+
+// SIM_SCGC5 = 0x5;
+// const uint32_t scgc5 = SIM_SCGC5;
+// SIM_SCGC5_REG(SIM_BASE_PTR) = 0x6;
+// const uint32_t scgc6 = SIM_SCGC5_REG(SIM_BASE_PTR);
+// ((((SIM_MemMapPtr)0x40047000u))->SCGC5) = 0x7;
+// const uint32_t scgc7 = ((((SIM_MemMapPtr)0x40047000u))->SCGC5);
+// 
+// SIM_MemMapPtr sim = ((SIM_MemMapPtr)0x40047000u);
+// sim->SCGC5 = 0x8;
+// const uint32t scgc8 = sim->SCGC5;
+
+#define SIM_BASE_PTR                             ((SIM_MemMapPtr)0x40047000u)
+
+/** SIM - Peripheral register structure */
+typedef struct SIM_MemMap {
+  uint32_t SOPT1;                                  /**< System Options Register 1, offset: 0x0 */
+  uint32_t SOPT1CFG;                               /**< SOPT1 Configuration Register, offset: 0x4 */
+  uint8_t RESERVED_0[4092];
+  uint32_t SOPT2;                                  /**< System Options Register 2, offset: 0x1004 */
+  uint8_t RESERVED_1[4];
+  uint32_t SOPT4;                                  /**< System Options Register 4, offset: 0x100C */
+  uint32_t SOPT5;                                  /**< System Options Register 5, offset: 0x1010 */
+  uint8_t RESERVED_2[4];
+  uint32_t SOPT7;                                  /**< System Options Register 7, offset: 0x1018 */
+  uint8_t RESERVED_3[8];
+  uint32_t SDID;                                   /**< System Device Identification Register, offset: 0x1024 */
+  uint8_t RESERVED_4[12];
+  uint32_t SCGC4;                                  /**< System Clock Gating Control Register 4, offset: 0x1034 */
+  uint32_t SCGC5;                                  /**< System Clock Gating Control Register 5, offset: 0x1038 */
+  uint32_t SCGC6;                                  /**< System Clock Gating Control Register 6, offset: 0x103C */
+  uint32_t SCGC7;                                  /**< System Clock Gating Control Register 7, offset: 0x1040 */
+  uint32_t CLKDIV1;                                /**< System Clock Divider Register 1, offset: 0x1044 */
+  uint8_t RESERVED_5[4];
+  uint32_t FCFG1;                                  /**< Flash Configuration Register 1, offset: 0x104C */
+  uint32_t FCFG2;                                  /**< Flash Configuration Register 2, offset: 0x1050 */
+  uint8_t RESERVED_6[4];
+  uint32_t UIDMH;                                  /**< Unique Identification Register Mid-High, offset: 0x1058 */
+  uint32_t UIDML;                                  /**< Unique Identification Register Mid Low, offset: 0x105C */
+  uint32_t UIDL;                                   /**< Unique Identification Register Low, offset: 0x1060 */
+  uint8_t RESERVED_7[156];
+  uint32_t COPC;                                   /**< COP Control Register, offset: 0x1100 */
+  uint32_t SRVCOP;                                 /**< Service COP Register, offset: 0x1104 */
+} volatile *SIM_MemMapPtr;
+/////// SIM
+//
+
+
+//
+/////// GPIO
+#define PTD_BASE_PTR                             ((GPIO_MemMapPtr)0x400FF0C0u)
+
+/** GPIO - Peripheral register structure */
+typedef struct GPIO_MemMap {
+  uint32_t PDOR;                                   /**< Port Data Output Register, offset: 0x0 */
+  uint32_t PSOR;                                   /**< Port Set Output Register, offset: 0x4 */
+  uint32_t PCOR;                                   /**< Port Clear Output Register, offset: 0x8 */
+  uint32_t PTOR;                                   /**< Port Toggle Output Register, offset: 0xC */
+  uint32_t PDIR;                                   /**< Port Data Input Register, offset: 0x10 */
+  uint32_t PDDR;                                   /**< Port Data Direction Register, offset: 0x14 */
+} volatile *GPIO_MemMapPtr;
+/////// GPIO
+//
+
+
+//
+/////// PORT
+#define PORTD_PCR(index)                         PORT_PCR_REG(PORTD_BASE_PTR,index)
+
+#define PORT_PCR_REG(base,index)                 ((base)->PCR[index])
+
+/** Peripheral PORTD base pointer */
+#define PORTD_BASE_PTR                           ((PORT_MemMapPtr)0x4004C000u)
+
+#define PORT_PCR_MUX(x)                          (((uint32_t)(((uint32_t)(x))<<PORT_PCR_MUX_SHIFT))&PORT_PCR_MUX_MASK)
+

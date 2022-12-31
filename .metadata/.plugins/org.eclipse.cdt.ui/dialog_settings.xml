@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<section name="Workbench">
+	<item value="Default C++ source template" key="LastUsedSourceTemplate"/>
+	<item value="Default C header template" key="LastUsedHeaderTemplate"/>
+	<section name="OptionalMessageDialog.hide.">
+		<item value="true" key="com.freescale.cdt.debug.cw.PN_SuppressDialog3a637494e398b3bfff6cc027ab2caeb2118b1d5a"/>
+	</section>
+	<section name="completion_proposal_size">
+	</section>
+	<section name="PDOMSearchPage">
+		<item value="227191" key="searchFlags"/>
+		<item value="true" key="caseSensitive"/>
+		<list key="previousPatterns">
+			<item value="SCGC5"/>
+			<item value="PDIR"/>
+			<item value="SimonInitialize"/>
+			<item value="nvic"/>
+			<item value="mPinNumber"/>
+			<item value="thefunctionwillreturn"/>
+			<item value="callback_vu32_t"/>
+			<item value="p03"/>
+			<item value="tpm"/>
+			<item value="TpmGetRegisterSC_TOF"/>
+			<item value="TpmSetRegisterCnt"/>
+			<item value="TpmGetRegisterMod"/>
+			<item value="p02"/>
+			<item value="PORT_B_PCR0"/>
+			<item value="bool_t"/>
+			<item value="UNUSED"/>
+			<item value="PORT_PCR"/>
+			<item value="GREEN_LED_PIN"/>
+			<item value="GPIOD_PDOR"/>
+			<item value="PORTD_BASE_PTR"/>
+			<item value="PORT_PCR_REG"/>
+			<item value="PORT_PCR_MUX"/>
+			<item value="PORTD_PCR"/>
+			<item value="GPIO_MemMapPtr"/>
+			<item value="GPIO_PDDR_REG"/>
+			<item value="GPIOD_PDDR"/>
+			<item value="GPIO_PDDR"/>
+			<item value="SIM_SCGC5_REG"/>
+			<item value="SIM_BASE_PTR"/>
+			<item value="SIM_SCGC5"/>
+			<item value="SIM_SCGC5_PORTD_MASK"/>
+			<item value="for"/>
+			<item value="heap"/>
+			<item value="TOTAL"/>
+		</list>
+	</section>
+	<section name="org.eclipse.cdt.ui.text.hover.CMacroExpansionExploration.internal">
+		<item value="640" key="size.width"/>
+		<item value="180" key="size.height"/>
+	</section>
+	<section name="org.eclipse.cdt.ui.text.hover.CMacroExpansionExploration">
+	</section>
+</section>

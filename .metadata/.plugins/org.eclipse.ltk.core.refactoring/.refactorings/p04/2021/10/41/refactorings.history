@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Rename resource &apos;p02/p01_FLASH_OpenSDA.traceConfig&apos; to &apos;p02_FLASH_OpenSDA.traceConfig&apos;" description="Rename resource &apos;p01_FLASH_OpenSDA.traceConfig&apos;" flags="7" id="org.eclipse.ltk.core.refactoring.rename.resource" input="p01_FLASH_OpenSDA.traceConfig" name="p02_FLASH_OpenSDA.traceConfig" stamp="1633292900151" updateReferences="true"/>
+</session>

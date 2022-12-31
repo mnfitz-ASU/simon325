@@ -1,0 +1,23 @@
+-mcpu=cortex-m0
+-mthumb
+-mfloat-abi=soft
+-g3
+-gdwarf-2
+-gstrict-dwarf
+-DC99=1
+-I"C:/Users/mn-fi/Projects/git/compsci/cse325/project4/p04/Project_Headers"
+-I"C:/Users/mn-fi/Projects/git/compsci/cse325/project4/p04/Project_Settings/Startup_Code"
+-I"C:/Freescale/CW MCU v11.1/MCU/ARM_GCC_Support/ewl/EWL_C/include"
+-I"C:/Freescale/CW MCU v11.1/MCU/ARM_GCC_Support/ewl/EWL_Runtime/include"
+-O0
+-ffunction-sections
+-fdata-sections
+-fno-common
+-Wall
+-Wextra
+-Werror
+-std=c99
+-v
+-c
+-fmessage-length=0
+-specs=ewl_c9x_noio.specs
